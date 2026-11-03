@@ -1,0 +1,64 @@
+{
+  "email": "notify-1793682001938@lumens.test",
+  "phone": "09122001938",
+  "statusConfig": {
+    "email": {
+      "configured": true,
+      "host": "127.0.0.1",
+      "port": 2525,
+      "secure": false,
+      "from": "LUMENS <no-reply@lumens.archi>",
+      "replyTo": null,
+      "hint": null
+    },
+    "sms": {
+      "configured": true,
+      "provider": "kavenegar",
+      "sender": "10004346",
+      "otpTemplate": null,
+      "baseUrl": "http://127.0.0.1:2526",
+      "hint": null
+    },
+    "ready": {
+      "email": true,
+      "sms": true,
+      "both": true
+    }
+  },
+  "flags": {
+    "email": {
+      "sent": true,
+      "skipped": false
+    },
+    "sms": {
+      "sent": true,
+      "skipped": false
+    }
+  },
+  "results": [
+    {
+      "label": "signup status",
+      "ok": true,
+      "actual": 201,
+      "expected": 201
+    },
+    {
+      "label": "status endpoint ok",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "label": "email flag present",
+      "ok": true,
+      "actual": "boolean",
+      "expected": "boolean"
+    },
+    {
+      "label": "sms flag present",
+      "ok": true,
+      "actual": "boolean",
+      "expected": "boolean"
+    }
+  ]
+}

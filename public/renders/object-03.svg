@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" role="img" aria-label="LUMENS 3D object studio render">
+  <defs>
+  <radialGradient id="studio" cx="50%" cy="35%" r="70%">
+    <stop offset="0%" stop-color="#23252e" />
+    <stop offset="55%" stop-color="#121319" />
+    <stop offset="100%" stop-color="#07070a" />
+  </radialGradient>
+  <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#2a2d37" />
+    <stop offset="100%" stop-color="#101116" />
+  </linearGradient>
+  <linearGradient id="cushion" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#3a3e4a" />
+    <stop offset="100%" stop-color="#181a21" />
+  </linearGradient>
+  <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#15161c" />
+    <stop offset="100%" stop-color="#08080b" />
+  </linearGradient>
+  <radialGradient id="spot" cx="50%" cy="20%" r="55%">
+    <stop offset="0%" stop-color="#d4af37" stop-opacity="0.22" />
+    <stop offset="100%" stop-color="#d4af37" stop-opacity="0" />
+  </radialGradient>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" />
+    <feColorMatrix type="saturate" values="0" />
+  </filter>
+  <radialGradient id="vignette" cx="50%" cy="45%" r="75%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0" />
+    <stop offset="70%" stop-color="#000" stop-opacity="0.25" />
+    <stop offset="100%" stop-color="#000" stop-opacity="0.72" />
+  </radialGradient></defs>
+  <rect width="1200" height="800" fill="#0a0a0a" />
+  <rect width="1200" height="800" fill="url(#studio)" />
+  <ellipse cx="600" cy="200" rx="620" ry="330" fill="url(#spot)" />
+  <rect x="0" y="619.69" width="1200" height="180.31" fill="url(#floorG)" />
+  <ellipse cx="547.8" cy="625.69" rx="284.82" ry="34" fill="#000000" opacity="0.55" />  <g transform="translate(348.42 437.28)">
+    <rect width="398.74" height="14" rx="7" fill="url(#cushion)" />
+    <rect x="193.37" y="14" width="12" height="128.41" fill="#1b1d24" />
+    <ellipse cx="199.37" cy="142.41" rx="135.57" ry="12" fill="#15171d" />
+    <rect x="71.77" y="-102.53" width="6" height="99.69" fill="#d4af37" opacity="0.4" />
+    <path d="M37.77 -102.53 L111.77 -102.53 L93.77 -148.53 L55.77 -148.53 Z" fill="#2b2f39" />
+    <ellipse cx="74.77" cy="-146.53" rx="26" ry="10" fill="#d4af37" opacity="0.35" />
+    <rect x="0" y="0" width="398.74" height="3" fill="#d4af37" opacity="0.45" />
+  </g>  <rect x="0" y="619.69" width="1200" height="1.5" fill="#d4af37" opacity="0.28" />
+  <rect x="70" y="619.69" width="1060" height="180.31" fill="#000000" opacity="0.25" />
+  <rect width="1200" height="800" fill="url(#vignette)" />
+  <rect width="1200" height="800" filter="url(#grain)" opacity="0.05" />
+  <g opacity="0.5">
+    <rect x="48" y="48" width="34" height="2" fill="#d4af37" opacity="0.7" />
+    <text x="94" y="55" font-family="Verdana, sans-serif" font-size="17" letter-spacing="6" fill="#d4af37" opacity="0.85">LUMENS</text>
+  </g>
+</svg>

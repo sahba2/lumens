@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="LUMENS - معماری با هوش مصنوعی">
+  <defs>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" />
+    <feColorMatrix type="saturate" values="0" />
+  </filter></defs>
+  <rect width="1200" height="630" fill="#0a0a0a" />
+  <ellipse cx="900" cy="120" rx="520" ry="360" fill="#d4af37" opacity="0.14" />
+  <ellipse cx="180" cy="560" rx="420" ry="280" fill="#ffffff" opacity="0.04" />
+  <g opacity="0.5">
+    <path d="M0 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M80 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M160 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M240 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M320 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M400 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M480 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M560 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M640 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M720 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M800 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M880 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M960 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M1040 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M1120 0 V630" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 0 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 80 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 160 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 240 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 320 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 400 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 480 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+    <path d="M0 560 H1200" stroke="#ffffff" stroke-opacity="0.05" />
+  </g>
+  <g transform="translate(84 96)">
+    <rect x="0" y="0" width="64" height="64" rx="18" fill="#0a0a0a" stroke="#d4af37" stroke-opacity="0.6" />
+    <path d="M20 46V18h6v22.4h19.6V46H20z" fill="#d4af37" />
+    <circle cx="45" cy="24" r="6" fill="none" stroke="#f2e2a8" stroke-width="2.4" />
+  </g>
+  <text x="168" y="140" font-family="Verdana, sans-serif" font-size="30" letter-spacing="14" fill="#d4af37">LUMENS</text>
+  <text x="84" y="268" font-family="Tahoma, Verdana, sans-serif" font-size="54" font-weight="bold" fill="#ffffff">معماری، فراتر از تخیل</text>
+  <text x="84" y="342" font-family="Tahoma, Verdana, sans-serif" font-size="54" font-weight="bold" fill="#d4af37">با هوش مصنوعی</text>
+  <rect x="84" y="392" width="220" height="3" fill="#d4af37" opacity="0.8" />
+  <text x="84" y="452" font-family="Tahoma, Verdana, sans-serif" font-size="26" fill="#a1a1aa">رندرینگ لحظه‌ای · پرامپت‌نویسی معماری · آبجکت‌های سه‌بعدی</text>
+  <g transform="translate(84 508)">
+    <rect width="250" height="58" rx="29" fill="#d4af37" />
+    <text x="125" y="37" text-anchor="middle" font-family="Tahoma, Verdana, sans-serif" font-size="21" font-weight="bold" fill="#0a0a0a">شروع یادگیری</text>
+    <rect x="274" y="0" width="250" height="58" rx="29" fill="none" stroke="#ffffff" stroke-opacity="0.25" />
+    <text x="399" y="37" text-anchor="middle" font-family="Tahoma, Verdana, sans-serif" font-size="21" fill="#ffffff">مشاهده آبجکت‌ها</text>
+  </g>
+  <g opacity="0.81">
+    <rect x="820" y="250" width="300" height="300" rx="26" fill="#d4af37" opacity="0.1" stroke="#d4af37" stroke-opacity="0.35" />
+    <rect x="860" y="290" width="220" height="4" fill="#d4af37" opacity="0.5" />
+    <circle cx="970" cy="400" r="76" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2" />
+    <circle cx="970" cy="400" r="44" fill="none" stroke="#d4af37" stroke-opacity="0.5" stroke-width="2" />
+  </g>
+  <rect width="1200" height="630" filter="url(#grain)" opacity="0.05" />
+</svg>

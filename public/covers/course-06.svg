@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" role="img" aria-label="LUMENS interior architectural render">
+  <defs>
+  <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#14151b" />
+    <stop offset="100%" stop-color="#0b0c10" />
+  </linearGradient>
+  <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#191410" />
+    <stop offset="100%" stop-color="#07070a" />
+  </linearGradient>
+  <linearGradient id="beam" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#f2e2a8" stop-opacity="0.4" />
+    <stop offset="100%" stop-color="#f2e2a8" stop-opacity="0" />
+  </linearGradient>
+  <linearGradient id="warm" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#d4af37" stop-opacity="0.5" />
+    <stop offset="100%" stop-color="#d4af37" stop-opacity="0" />
+  </linearGradient>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" />
+    <feColorMatrix type="saturate" values="0" />
+  </filter>
+  <radialGradient id="vignette" cx="50%" cy="45%" r="75%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0" />
+    <stop offset="70%" stop-color="#000" stop-opacity="0.25" />
+    <stop offset="100%" stop-color="#000" stop-opacity="0.72" />
+  </radialGradient></defs>
+  <rect width="1200" height="800" fill="#0a0a0a" />
+  <rect width="1200" height="800" fill="url(#wall)" />
+  <rect x="0" y="519.66" width="1200" height="280.34" fill="url(#floor)" />  <rect x="0" y="70" width="1200" height="1.5" fill="#ffffff" opacity="0.04" />
+  <rect x="0" y="84.83" width="1200" height="1.5" fill="#ffffff" opacity="0.04" />
+  <rect x="0" y="105.19" width="1200" height="1.5" fill="#ffffff" opacity="0.05" />
+  <rect x="0" y="111.52" width="1200" height="1.5" fill="#ffffff" opacity="0.03" />
+  <rect x="0" y="133.58" width="1200" height="1.5" fill="#ffffff" opacity="0.03" />
+  <rect x="0" y="142.7" width="1200" height="1.5" fill="#ffffff" opacity="0.02" />
+  <rect x="0" y="144.93" width="1200" height="1.5" fill="#ffffff" opacity="0.03" />
+  <rect x="0" y="191.04" width="1200" height="1.5" fill="#ffffff" opacity="0.04" />
+  <rect x="0" y="196.07" width="1200" height="1.5" fill="#ffffff" opacity="0.04" />
+  <rect x="0" y="230.23" width="1200" height="1.5" fill="#ffffff" opacity="0.05" />
+  <rect x="0" y="227.74" width="1200" height="1.5" fill="#ffffff" opacity="0.04" />
+  <rect x="0" y="217.96" width="1200" height="1.5" fill="#ffffff" opacity="0.06" />
+  <rect x="0" y="215.3" width="1200" height="1.5" fill="#ffffff" opacity="0.05" />
+  <rect x="0" y="251.44" width="1200" height="1.5" fill="#ffffff" opacity="0.06" />
+  <rect x="699.09" y="150" width="370.53" height="369.66" fill="#f2e2a8" opacity="0.14" />
+  <rect x="699.09" y="150" width="370.53" height="369.66" fill="none" stroke="#f2e2a8" stroke-opacity="0.45" stroke-width="2" />
+  <rect x="883.35" y="150" width="2" height="369.66" fill="#0a0a0a" opacity="0.6" />
+  <polygon points="699.09 519.66 1069.62 519.66 859.62 770 439.09 770" fill="url(#beam)" />
+  <ellipse cx="824.35" cy="609.66" rx="300" ry="60" fill="url(#warm)" opacity="0.7" />  <rect x="253.4" y="423.66" width="397.05" height="86" rx="16" fill="#16171d" />
+  <rect x="269.4" y="387.66" width="365.05" height="44" rx="14" fill="#1d1f27" />
+  <rect x="253.4" y="507.66" width="397.05" height="8" rx="4" fill="#0d0e12" />
+  <rect x="293.4" y="369.66" width="70" height="70" rx="10" fill="#d4af37" opacity="0.16" />
+  <ellipse cx="491.93" cy="649.66" rx="220" ry="42" fill="#ffffff" opacity="0.045" />
+  <rect x="361.93" y="559.66" width="190" height="14" rx="7" fill="#22242c" />
+  <rect x="381.93" y="573.66" width="10" height="34" fill="#171921" />
+  <rect x="491.93" y="573.66" width="10" height="34" fill="#171921" />
+  <rect x="723.4" y="309.66" width="4" height="210" fill="#d4af37" opacity="0.35" />
+  <circle cx="725.4" cy="305.66" r="18" fill="#d4af37" opacity="0.28" />
+  <rect width="1200" height="800" fill="url(#vignette)" />
+  <rect width="1200" height="800" filter="url(#grain)" opacity="0.05" />
+  <g opacity="0.5">
+    <rect x="48" y="48" width="34" height="2" fill="#d4af37" opacity="0.7" />
+    <text x="94" y="55" font-family="Verdana, sans-serif" font-size="17" letter-spacing="6" fill="#d4af37" opacity="0.85">LUMENS</text>
+  </g>
+</svg>

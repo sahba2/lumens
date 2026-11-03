@@ -1,0 +1,11 @@
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3114
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ✓ Compiled /middleware in 381ms (131 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 4.9s (651 modules)
+ GET / 200 in 5450ms
+ ✓ Compiled /icon.svg in 327ms (383 modules)
+ GET /icon.svg?8e1bcdce0ca1e724 200 in 497ms

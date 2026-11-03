@@ -1,0 +1,107 @@
+
+> lumens-platform@1.0.0 dev
+> next dev -p 3000
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.4s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 547ms (131 modules)
+ ✓ Compiled /api/notifications/status in 140ms (111 modules)
+[notifications] e-mail: ENABLED (127.0.0.1:2525, secure=false, from "LUMENS <no-reply@lumens.archi>")
+[notifications] SMS: ENABLED (provider=kavenegar, sender=10004346)
+ GET /api/notifications/status 200 in 301ms
+ ✓ Compiled /api/auth/signup in 54ms (120 modules)
+[sms] sent via kavenegar to 0912***938 (id: 4486)
+[mail] sent "Notify Probe عزیز، به LUMENS خوش آمدید" to n***@lumens.test (id: <809b272d-585c-a788-fedc-fa64bfacb75b@lumens.archi>)
+[notifications] signup n***@lumens.test / 0912***938: email=sent sms=sent
+ POST /api/auth/signup 201 in 219ms
+ POST /api/auth/signup 201 in 95ms
+ ○ Compiling /courses ...
+ ✓ Compiled /courses in 14.8s (723 modules)
+ GET /courses 200 in 15049ms
+ ✓ Compiled /icon.svg in 328ms (415 modules)
+ GET /icon.svg?8e1bcdce0ca1e724 200 in 601ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 2.4s (663 modules)
+ GET /api/auth/session 200 in 7283ms
+ GET /api/auth/session 200 in 16ms
+ GET /api/auth/session 200 in 9ms
+ ○ Compiling /objects ...
+ ✓ Compiled /objects in 1772ms (1012 modules)
+ ○ Compiling /articles ...
+ ✓ Compiled /ai-architecture in 3.7s (1014 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 2.4s (1051 modules)
+ ○ Compiling /realtime-rendering ...
+ ✓ Compiled /realtime-rendering in 1104ms (1023 modules)
+ GET /realtime-rendering 200 in 438ms
+ ✓ Compiled /api/auth/[...nextauth] in 285ms (447 modules)
+ ✓ Compiled (695 modules)
+ GET /api/auth/session 200 in 947ms
+ GET /icon.svg?8e1bcdce0ca1e724 200 in 1114ms
+ GET /api/auth/session 200 in 16ms
+ GET /api/auth/session 200 in 19ms
+ GET /api/auth/csrf 200 in 18ms
+ ✓ Compiled /api/auth/signup in 317ms (503 modules)
+[sms] sent via kavenegar to 0912***502 (id: 4591)
+ POST /api/auth/signup 201 in 515ms
+ ✓ Compiled /api/auth/phone/request in 109ms (506 modules)
+[sms] sent via kavenegar to 0912***502 (id: 4751)
+ POST /api/auth/phone/request 200 in 173ms
+ ✓ Compiled /api/auth/[...nextauth] in 163ms (737 modules)
+ GET /api/auth/csrf 200 in 257ms
+ POST /api/auth/callback/phone-otp 200 in 23ms
+ GET /api/auth/session 200 in 12ms
+ GET /api/auth/csrf 200 in 8ms
+ POST /api/auth/callback/phone-otp 401 in 10ms
+ POST /api/auth/phone/request 429 in 18ms
+[sms] sent via kavenegar to 0936***509 (id: 4278)
+ POST /api/auth/signup 201 in 118ms
+[sms] sent via kavenegar to 0936***509 (id: 4714)
+ POST /api/auth/phone/request 200 in 17ms
+ GET /api/auth/csrf 200 in 8ms
+ POST /api/auth/callback/phone-otp 401 in 9ms
+ GET /api/auth/csrf 200 in 6ms
+ POST /api/auth/callback/phone-otp 401 in 11ms
+ GET /api/auth/csrf 200 in 14ms
+ POST /api/auth/callback/phone-otp 401 in 10ms
+ GET /api/auth/csrf 200 in 7ms
+ POST /api/auth/callback/phone-otp 401 in 11ms
+ GET /api/auth/csrf 200 in 8ms
+ POST /api/auth/callback/phone-otp 401 in 17ms
+ GET /api/auth/csrf 200 in 9ms
+ POST /api/auth/callback/phone-otp 401 in 12ms
+ ✓ Compiled in 859ms (774 modules)
+ ✓ Compiled in 539ms (774 modules)
+ ✓ Compiled in 481ms (774 modules)
+ ✓ Compiled /api/auth/signup in 127ms (503 modules)
+[sms] sent via kavenegar to 0912***662 (id: 4244)
+ POST /api/auth/signup 201 in 452ms
+ POST /api/auth/signup 400 in 10ms
+ POST /api/auth/signup 400 in 11ms
+ POST /api/auth/signup 400 in 9ms
+ POST /api/auth/signup 409 in 84ms
+ POST /api/auth/signup 409 in 80ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 933ms (735 modules)
+ GET /api/auth/csrf 200 in 1234ms
+ POST /api/auth/callback/credentials 200 in 103ms
+ GET /api/auth/session 200 in 8ms
+ GET /api/auth/csrf 200 in 6ms
+ POST /api/auth/callback/credentials 200 in 83ms
+ GET /api/auth/session 200 in 9ms
+ GET /api/auth/csrf 200 in 8ms
+ POST /api/auth/callback/credentials 401 in 84ms
+[sms] sent via kavenegar to 0968***662 (id: 4880)
+ POST /api/auth/signup 201 in 136ms
+[sms] sent via kavenegar to 0968***785 (id: 4691)
+ POST /api/auth/signup 201 in 163ms
+ ✓ Compiled /api/auth/phone/request in 129ms (737 modules)
+ POST /api/auth/phone/request 404 in 174ms
+ POST /api/auth/phone/request 400 in 11ms
+ ✓ Compiled /auth/login in 422ms (1016 modules)
+ GET /auth/login 200 in 644ms

@@ -1,0 +1,193 @@
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (114kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (268kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[sms] delivery failed for 0935***207: fetch failed
+[mail] failed for f***@lumens.test via 127.0.0.1:2525: connect ECONNREFUSED 127.0.0.1:2525
+[notifications] signup f***@lumens.test / 0935***207: email=FAILED(connect ECONNREFUSED 127.0.0.1:2525) sms=FAILED(fetch failed)  <= e-mail: connect ECONNREFUSED 127.0.0.1:2525
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\TandisCom\Desktop\web\.next\server\app\api'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/signup/route' in C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/signup/route' in 'C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/signup/route (expected C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js)
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at resolve commonjs C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\TandisCom\Desktop\web\.next\server\app\api'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/signup/route' in C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/signup/route' in 'C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/signup/route (expected C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js)
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\flight-client-entry-plugin.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\flight-client-entry-plugin.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack-config.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/signup/route' in C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/signup/route' in 'C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/signup/route (expected C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js)
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at resolve commonjs C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/signup/route' in C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/signup/route' in 'C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/signup/route (expected C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js)
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-app-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-app-loader.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at resolve commonjs C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/signup/route' in C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/signup/route' in 'C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/signup/route (expected C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js)
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at resolve commonjs C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/signup/route' in C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/signup/route' in 'C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/signup/route (expected C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js)
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/signup/route' in C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/signup/route' in 'C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/signup/route (expected C:\Users\TandisCom\Desktop\web\.next\server\app\api\auth\signup\route.js)
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\swc\index.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\parse-module.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\analysis\get-page-static-info.js
+<w>  at file dependencies C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at file C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+<w>  at resolve commonjs C:\Users\TandisCom\Desktop\web\node_modules\next\dist\build\webpack\loaders\next-flight-client-module-loader.js
+[mail] failed for o***@lumens.test via 127.0.0.1:2525: connect ECONNREFUSED 127.0.0.1:2525
+[notifications] signup o***@lumens.test / 0912***502: email=FAILED(connect ECONNREFUSED 127.0.0.1:2525) sms=sent  <= e-mail: connect ECONNREFUSED 127.0.0.1:2525
+[mail] failed for o***@lumens.test via 127.0.0.1:2525: connect ECONNREFUSED 127.0.0.1:2525
+[notifications] signup o***@lumens.test / 0936***509: email=FAILED(connect ECONNREFUSED 127.0.0.1:2525) sms=sent  <= e-mail: connect ECONNREFUSED 127.0.0.1:2525
+[mail] failed for r***@lumens.test via 127.0.0.1:2525: connect ECONNREFUSED 127.0.0.1:2525
+[notifications] signup r***@lumens.test / 0912***662: email=FAILED(connect ECONNREFUSED 127.0.0.1:2525) sms=sent  <= e-mail: connect ECONNREFUSED 127.0.0.1:2525
+[mail] failed for n***@lumens.test via 127.0.0.1:2525: connect ECONNREFUSED 127.0.0.1:2525
+[notifications] signup n***@lumens.test / 0968***662: email=FAILED(connect ECONNREFUSED 127.0.0.1:2525) sms=sent  <= e-mail: connect ECONNREFUSED 127.0.0.1:2525
+[mail] failed for p***@lumens.test via 127.0.0.1:2525: connect ECONNREFUSED 127.0.0.1:2525
+[notifications] signup p***@lumens.test / 0968***785: email=FAILED(connect ECONNREFUSED 127.0.0.1:2525) sms=sent  <= e-mail: connect ECONNREFUSED 127.0.0.1:2525

@@ -1,0 +1,44 @@
+
+> lumens-platform@1.0.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (114kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (268kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/14) ...
+   Generating static pages (3/14) 
+   Generating static pages (6/14) 
+   Generating static pages (10/14) 
+ ✓ Generating static pages (14/14)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    29.9 kB         150 kB
+├ ○ /_not-found                          873 B          88.2 kB
+├ ○ /ai-architecture                     568 B           102 kB
+├ ○ /ai-prompts                          2.19 kB         118 kB
+├ ○ /ai-workflow                         568 B           102 kB
+├ ƒ /articles                            5.59 kB         121 kB
+├ ƒ /auth/callback                       0 B                0 B
+├ ○ /auth/login                          191 B           171 kB
+├ ƒ /courses                             5.6 kB          126 kB
+├ ○ /icon.svg                            0 B                0 B
+├ ƒ /objects                             4.44 kB         125 kB
+└ ○ /realtime-rendering                  568 B           102 kB
++ First Load JS shared by all            87.3 kB
+  ├ chunks/117-3ceb4d0ad19eee19.js       31.7 kB
+  ├ chunks/fd9d1056-0513bfa1d30c24ee.js  53.6 kB
+  └ other shared chunks (total)          1.95 kB
+
+
+ƒ Middleware                             87.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
