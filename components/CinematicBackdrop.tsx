@@ -36,7 +36,7 @@ export default function CinematicBackdrop({
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`.trim()}
     >
       {/* Base colour grade */}
-      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_78%_-12%,rgba(212,175,55,0.24),transparent_58%),radial-gradient(90%_75%_at_6%_18%,rgba(104,116,196,0.18),transparent_62%),linear-gradient(180deg,#0a0a0a_0%,#0b0a09_46%,#070708_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_78%_-12%,rgba(199,168,91,0.1),transparent_58%),radial-gradient(90%_75%_at_6%_18%,rgba(99,102,241,0.045),transparent_62%),linear-gradient(180deg,#24262a_0%,#212429_46%,#1b1d21_100%)]" />
 
       {/* Looping cinematic backdrop ("hero video") */}
       <div className="hero-video">
@@ -78,20 +78,20 @@ export default function CinematicBackdrop({
       >
         <defs>
           <pattern id="lumens-windows" width="28" height="36" patternUnits="userSpaceOnUse">
-            <rect x="5" y="7" width="4" height="7" fill="#f2e2a8" opacity="0.16" />
-            <rect x="16" y="7" width="4" height="7" fill="#d4af37" opacity="0.1" />
-            <rect x="5" y="21" width="4" height="7" fill="#f2e2a8" opacity="0.08" />
-            <rect x="16" y="21" width="4" height="7" fill="#d4af37" opacity="0.07" />
+            <rect x="5" y="7" width="4" height="7" fill="#E3CD9A" opacity="0.16" />
+            <rect x="16" y="7" width="4" height="7" fill="#C7A85B" opacity="0.1" />
+            <rect x="5" y="21" width="4" height="7" fill="#E3CD9A" opacity="0.08" />
+            <rect x="16" y="21" width="4" height="7" fill="#C7A85B" opacity="0.07" />
           </pattern>
           <radialGradient id="lumens-sun" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f2e2a8" stopOpacity="0.32" />
-            <stop offset="45%" stopColor="#d4af37" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#d4af37" stopOpacity="0" />
+            <stop offset="0%" stopColor="#E3CD9A" stopOpacity="0.32" />
+            <stop offset="45%" stopColor="#C7A85B" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#C7A85B" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="lumens-haze" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#d4af37" stopOpacity="0" />
-            <stop offset="70%" stopColor="#d4af37" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#d4af37" stopOpacity="0.28" />
+            <stop offset="0%" stopColor="#C7A85B" stopOpacity="0" />
+            <stop offset="70%" stopColor="#C7A85B" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#C7A85B" stopOpacity="0.28" />
           </linearGradient>
         </defs>
 
@@ -100,7 +100,7 @@ export default function CinematicBackdrop({
         {/* Distant skyline */}
         <path
           d="M0 720V540h54v-54h58v54h34V446h86v94h42V402h96v138h48v-72h78v72h36V396h104v144h58v-94h88v94h42V470h86v70h44V420h98v120h56v-62h82v62h40V508h92v32h46v-84h96v84h52v-40h102v220z"
-          fill="#0c0c11"
+          fill="#1E2126"
           opacity="0.9"
         />
         <path
@@ -112,11 +112,11 @@ export default function CinematicBackdrop({
         {/* Foreground silhouettes */}
         <path
           d="M0 720V600h44v-38h52v38h30V520h70v80h38V480h88v120h42v-48h58v48h26V560h64v40h34V456h82v144h46v-64h60v64h34V610h58v30h28V500h74v100h42v-56h54v56h30V470h76v130h40v-40h60v40h30V560h74v40h36V510h64v90h30V470h70v130h36V540h60v60h34v-40h56v40h30v120z"
-          fill="#050507"
+          fill="#171A1E"
         />
 
         {/* Gold architectural rim lights */}
-        <g stroke="#d4af37" strokeOpacity="0.18" strokeWidth="1">
+        <g stroke="#C7A85B" strokeOpacity="0.18" strokeWidth="1">
           <path d="M198 446v274M282 458v262M366 396v324M470 540v180M596 470v250M726 420v300M866 508v212M1006 424v296M1150 468v252M1276 520v200" />
           <path d="M0 640h1440" strokeOpacity="0.08" />
         </g>
@@ -131,11 +131,11 @@ export default function CinematicBackdrop({
       <div className="hero-light-sweep" />
 
       {/* Warm / cool practical lights */}
-      <div className="absolute -right-24 -top-32 h-[30rem] w-[30rem] animate-float-slow rounded-full bg-gold/15 blur-3xl" />
-      <div className="absolute -left-28 top-24 h-96 w-96 animate-float-slow rounded-full bg-indigo-500/15 blur-3xl [animation-delay:-6s]" />
+      <div className="absolute -right-24 -top-32 h-[30rem] w-[30rem] animate-float-slow rounded-full bg-gold/[0.13] blur-3xl" />
+      <div className="absolute -left-28 top-24 h-96 w-96 animate-float-slow rounded-full bg-indigo-500/[0.05] blur-3xl [animation-delay:-6s]" />
 
-      {/* Readability grade behind the RTL copy column */}
-      <div className="absolute inset-0 bg-gradient-to-l from-ink/80 via-ink/25 to-transparent" />
+      {/* Readability scrim localized behind the RTL copy column */}
+      <div className="hero-copy-scrim" />
 
       {/* Film texture */}
       <div className="hero-film-grain" />

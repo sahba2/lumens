@@ -10,9 +10,11 @@ import CtaBand from "@/components/CtaBand";
 import EngineShowcase from "@/components/landing/EngineShowcase";
 import FaqAccordion from "@/components/FaqAccordion";
 import FeaturedObjects from "@/components/FeaturedObjects";
-import { IconArrowLeft, IconBolt, IconBrain, IconCheck, IconSparkles } from "@/components/Icons";
+import { IconArrowLeft, IconBrain, IconCheck, IconSparkles } from "@/components/Icons";
+import CompareSlider from "@/components/landing/CompareSlider";
 import HeroShowcase from "@/components/landing/HeroShowcase";
 import SearchDock from "@/components/landing/SearchDock";
+import SketchDropzone from "@/components/landing/SketchDropzone";
 import KeywordCards from "@/components/KeywordCards";
 import Marquee from "@/components/Marquee";
 import Reveal from "@/components/Reveal";
@@ -20,7 +22,7 @@ import SectionHeading from "@/components/SectionHeading";
 import SeoTopics from "@/components/SeoTopics";
 import Testimonials from "@/components/Testimonials";
 import WorkflowTimeline from "@/components/WorkflowTimeline";
-import { allCourses, articles, heroStats, platformStats } from "@/lib/data";
+import { allCourses, articles, platformStats } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "LUMENS | معماری، فراتر از تخیل با هوش مصنوعی",
@@ -32,11 +34,26 @@ export const metadata: Metadata = {
 const popularCourses = allCourses.filter((course) => course.popular).slice(0, 3);
 const latestArticles = articles.slice(0, 3);
 
-const promises = [
-  "رندر واریاسیون در ۸ ثانیه با پایپ‌لاین SDXL Turbo",
-  "کتابخانه پرامپت اختصاصی معماری با منفی‌پرامپت",
-  "آبجکت‌های سه‌بعدی سبک با متریال PBR آماده رندر",
-  "گردش کار شش‌مرحله‌ای از کروکی تا برد ارائه نهایی",
+/**
+ * Hero trust row: three short, verifiable facts. The hero intentionally keeps a
+ * single primary action (the free render drop zone) so a first-time visitor is
+ * never asked to choose between competing calls to action.
+ */
+const heroTrust = [
+  "بدون نصب نرم‌افزار",
+  "۳ رندر رایگان برای هر حساب",
+  "شیت متنی رایگان و نامحدود",
+];
+
+/**
+ * Highlights of the Live 3D loop banner. It is no longer part of the hero: it
+ * now introduces the engine feature further down the page, after the render
+ * showcase, so the first screen has exactly one visual and one action.
+ */
+const live3dHighlights = [
+  "سه پریست نور: طلایی، شب و استودیو",
+  "پرامپت زنده و نوار پیشرفت رندر",
+  "اجرا در مرورگر، بدون نصب نرم‌افزار",
 ];
 
 export default function HomePage() {
@@ -48,66 +65,53 @@ export default function HomePage() {
         className="hero-stage relative isolate scroll-mt-[88px] overflow-hidden"
       >
         <CinematicBackdrop />
+        <div className="hero-aurora" aria-hidden="true" />
 
-        <div className="container-x relative z-10 grid items-center gap-14 py-16 lg:grid-cols-[1.05fr_1fr] lg:py-20">
+        <div className="container-x relative z-10 grid items-center gap-10 py-12 lg:grid-cols-[minmax(0,1.04fr)_minmax(0,1fr)] lg:gap-12 lg:py-16">
           <div className="flex flex-col justify-center">
             <span className="eyebrow">
               <IconSparkles className="h-3.5 w-3.5" />
               AI × ARCHITECTURE PLATFORM
             </span>
 
-            <h1 className="mt-7 font-display text-[2rem] font-black leading-[1.45] text-white sm:text-5xl sm:leading-[1.35]">
+            <h1 className="mt-6 font-display text-[1.9rem] font-black leading-[1.45] text-lumens-bone sm:text-[2.6rem] sm:leading-[1.35]">
               <span className="text-gradient-gold">LUMENS</span>
               <span className="mx-3 text-zinc-700">|</span>
-              هوش مصنوعی در معماری
-              <span className="mt-3 block text-[0.62em] font-extrabold leading-[1.6] text-zinc-200">
-                از کانسپت تا رندر سینمایی، در یک گردش کار هوشمند
+              از کروکی دستی تا رندر سینمایی، در یک گفت‌وگو
+              <span className="mt-3 block text-[0.52em] font-extrabold leading-[1.7] text-lumens-bone/85">
+                هوش مصنوعی در معماری؛ تصویر خام را رها کنید و رندر نهایی را تحویل بگیرید
               </span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-sm leading-8 text-zinc-400 sm:text-base">
-              رندرینگ لحظه‌ای در چند ثانیه و پرامپت‌نویسی تخصصی معماری؛ از کانسپت، حجم و دیاگرام
-              تا نورپردازی سینمایی و برد ارائه نهایی — همه در یک گردش کار هوشمند و تکرارپذیر.
+            <p className="mt-5 max-w-xl text-sm leading-8 text-zinc-400">
+              تصویر پلان، کروکی یا ویوپورت مدل را در باکس رندر زیر رها کنید؛ LUMENS در چند ثانیه
+              شیت پنج‌فازی، پرامپت کالیبره و رندر سینمایی را می‌سازد.
             </p>
 
-            <ul className="mt-7 grid gap-3 sm:grid-cols-2">
-              {promises.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-xs leading-6 text-zinc-300">
-                  <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+            <div id="upload" className="glass-card mt-6 scroll-mt-[110px] p-2.5 sm:p-3">
+              <SketchDropzone />
+            </div>
+
+            <ul className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+              {heroTrust.map((item) => (
+                <li key={item} className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400">
+                  <IconCheck className="h-3.5 w-3.5 shrink-0 text-gold" />
                   {item}
                 </li>
               ))}
             </ul>
-
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link href="/courses" className="btn-primary group overflow-hidden">
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-l from-transparent via-white/45 to-transparent transition-transform duration-700 ease-cinema group-hover:translate-x-full"
-                />
-                <IconBolt className="h-4 w-4" />
-                شروع رایگان با LUMENS
-              </Link>
-              <Link href="/objects" className="btn-glass-glow group">
-                <IconSparkles className="h-4 w-4 text-gold" />
-                کاوش آبجکت‌های سه‌بعدی
-                <IconArrowLeft className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1" />
-              </Link>
-            </div>
-
-            <dl className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {heroStats.map((stat) => (
-                <div key={stat.label} className="glass rounded-2xl p-4 text-center">
-                  <dt className="font-display text-lg font-black text-gradient-gold sm:text-xl">
-                    {stat.value}
-                  </dt>
-                  <dd className="mt-2 text-[10px] leading-5 text-zinc-500">{stat.label}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
 
-          <HeroShowcase />
+          <div className="relative">
+            <CompareSlider
+              priority
+              caption="BEFORE / AFTER · ویلای کردان"
+              sizes="(max-width: 1024px) 100vw, 46vw"
+            />
+            <p className="mt-3 text-center text-[10px] leading-5 text-zinc-500">
+              نمونه واقعی ویلای کردان: کروکی دستی در برابر رندر سینمایی LUMENS؛ دستگیره را بکشید.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -119,6 +123,52 @@ export default function HomePage() {
       <Reveal>
         <EngineShowcase />
       </Reveal>
+
+      {/* ---------------------------------------- Live 3D feature banner */}
+      <section id="live-3d" aria-labelledby="live-3d-title" className="container-x py-16">
+        <Reveal>
+          <div className="glass-card relative grid items-center gap-8 overflow-hidden p-4 sm:p-6 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)] lg:gap-10">
+            <div className="orb -right-16 -top-16 h-52 w-52 bg-gold/10" />
+
+            <div className="relative">
+              <span className="eyebrow">
+                <IconSparkles className="h-3.5 w-3.5" />
+                LIVE 3D LOOP
+              </span>
+              <h2
+                id="live-3d-title"
+                className="mt-4 font-display text-xl font-black leading-9 text-white sm:text-2xl sm:leading-[2.4rem]"
+              >
+                حجم و ماسینگ پروژه، پیش از رندر نهایی زنده بررسی می‌شود
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-zinc-400">
+                موتور سه‌بعدی LUMENS با سه پریست نور، پرامپت زنده و نوار پیشرفت رندر، همان
+                تجربه‌ای است که هنگام ساخت پروژه می‌بینید؛ بدون نصب هیچ نرم‌افزاری.
+              </p>
+
+              <ul className="mt-4 space-y-2">
+                {live3dHighlights.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 text-[11px] leading-6 text-zinc-300"
+                  >
+                    <IconCheck className="mt-1 h-3.5 w-3.5 shrink-0 text-gold" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <Link href="/realtime-rendering" className="btn-primary mt-5 px-4 py-2.5 text-xs">
+                <IconSparkles className="h-4 w-4" />
+                تجربه رندر لحظه‌ای
+                <IconArrowLeft className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <HeroShowcase />
+          </div>
+        </Reveal>
+      </section>
 
       {/* ------------------------------------------- Golden keyword cards */}
       <section className="container-x py-20">

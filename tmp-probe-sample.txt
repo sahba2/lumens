@@ -1,0 +1,12 @@
+﻿PASS  signup 201
+PASS  sample mode is ready without a key
+PASS  quota starts at 3
+PASS  render 200
+PASS  render provider=demo (sample)
+PASS  sample render is a bundled real photo
+PASS  remaining credits decremented
+PASS  sample image served 200
+PASS  sample image content-type
+PASS  sample image is high resolution (> 100KB)
+PASS  square sample uses a square render
+SAMPLE_PROVIDER_OK

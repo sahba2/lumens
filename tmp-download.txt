@@ -1,0 +1,6 @@
+﻿OK sample-facade-16x9.jpg size=182177
+OK sample-villa-16x9.jpg size=344485
+OK sample-terrace-4x3.jpg size=317602
+OK sample-interior-4x3.jpg size=329398
+OK sample-square-frame.jpg size=449845
+OK sample-square-stair.jpg size=616399

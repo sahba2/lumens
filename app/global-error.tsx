@@ -22,7 +22,7 @@ export default function GlobalError({
 
   return (
     <html lang="fa" dir="rtl" className="dark">
-      <body className="dark min-h-screen bg-neutral-950 text-neutral-100 antialiased">
+      <body className="dark min-h-screen bg-lumens-bg text-lumens-muted antialiased">
         <main className="container-x flex min-h-screen flex-col items-center justify-center py-20 text-center">
           <span className="eyebrow">LUMENS</span>
           <h1 className="section-title mt-6">خطای غیرمنتظره در بارگذاری برنامه</h1>
@@ -34,7 +34,7 @@ export default function GlobalError({
           {error?.message ? (
             <p
               dir="ltr"
-              className="mt-5 max-w-xl overflow-x-auto rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-left text-[11px] leading-6 text-zinc-500"
+              className="mt-5 max-w-xl overflow-x-auto rounded-xl border border-lumens-border bg-[#171A1E]/70 px-4 py-3 text-left text-[11px] leading-6 text-lumens-dim"
             >
               {error.message}
             </p>

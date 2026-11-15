@@ -253,3 +253,22 @@ export function IconSend({ className = defaults.className, ...props }: IconProps
     </svg>
   );
 }
+
+export function IconUpload({ className = defaults.className, ...props }: IconProps) {
+  return (
+    <svg {...defaults} className={className} {...props}>
+      <path d="M12 16.5v-11m0 0 4 4m-4-4-4 4" />
+      <path d="M4.5 15.5v2A1.5 1.5 0 0 0 6 19h12a1.5 1.5 0 0 0 1.5-1.5v-2" />
+    </svg>
+  );
+}
+
+export function IconImage({ className = defaults.className, ...props }: IconProps) {
+  return (
+    <svg {...defaults} className={className} {...props}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+      <circle cx="9" cy="10" r="1.6" />
+      <path d="m4.5 17 4.6-4.4 3.1 2.9 3-2.6 4.3 4.1" />
+    </svg>
+  );
+}

@@ -1,0 +1,27 @@
+﻿PASS  signup 201
+PASS  landing CTA opens the engine dialog
+PASS  sheet loaded and render button rendered
+PASS  render button clicked
+PASS  loading state shown while rendering
+PASS  loading status text observed
+PASS  generated image displayed
+PASS  image comes from the render API / proxy
+PASS  quota request happened
+PASS  generate request happened
+PASS  quota checked BEFORE generating
+PASS  card shows the generated image label
+PASS  credits exhausted via API
+PASS  with 0 credits the dialog shows the Persian quota message
+PASS  with 0 credits no POST reaches /api/render/generate
+PASS  with 0 credits the quota endpoint was still checked
+{
+  "image": {
+    "src": "http://localhost:3100/renders/samples/sample-facade-16x9.jpg",
+    "width": 1600,
+    "height": 900
+  },
+  "requestsAfterClick": [
+    "http://localhost:3100/api/render/quota"
+  ],
+  "gateTextLength": 11427
+}

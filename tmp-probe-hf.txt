@@ -1,0 +1,7 @@
+﻿PASS  signup 201
+PASS  provider ready
+PASS  render 200
+PASS  provider=huggingface
+PASS  credits decremented
+PASS  HF binary response converted to a data URL
+PROVIDER_HUGGINGFACE_OK

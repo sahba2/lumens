@@ -41,8 +41,15 @@ interface SignupResponse {
   sms?: NotificationFlag;
 }
 
-/** Where a successfully authenticated user is sent. */
-const afterAuthHref = "/dashboard";
+/** Where a successfully authenticated user is sent when the host passes nothing. */
+const DEFAULT_AFTER_AUTH_HREF = "/dashboard";
+
+interface AuthPanelProps {
+  /** Route the visitor is sent to after a successful login / sign-up. */
+  afterAuthHref?: string;
+  /** Called right before the redirect, so a modal can close itself. */
+  onAuthenticated?: () => void;
+}
 
 /** Client guards mirror the server checks in `app/api/auth/signup/route.ts`. */
 const MIN_PASSWORD_LENGTH = 8;
@@ -76,7 +83,10 @@ function FieldError({ id, message }: { id: string; message?: string }) {
  * - sign-up posts to `/api/auth/signup` (bcrypt hash + JSON store) and then
  *   signs the user in automatically and redirects to the dashboard.
  */
-export default function AuthPanel() {
+export default function AuthPanel({
+  afterAuthHref = DEFAULT_AFTER_AUTH_HREF,
+  onAuthenticated,
+}: AuthPanelProps) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("signin");
   const [formError, setFormError] = useState<string | null>(null);

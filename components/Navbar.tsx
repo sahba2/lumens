@@ -3,7 +3,7 @@
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { IconClose, IconMenu } from "./Icons";
 import AuthModal from "./AuthModal";
 
@@ -20,7 +20,11 @@ const menuItems = [
   { href: "/articles", label: "مقالات سئو", emoji: "✍️" },
 ] as const;
 
-const startIdeaHref = "/ai-architecture";
+/** Id of the hero drop zone: the single action the header pushes users into. */
+const RENDER_ZONE_ID = "upload";
+
+/** Home-page render box; from other routes the browser lands on the same box. */
+const startIdeaHref = `/#${RENDER_ZONE_ID}`;
 
 /** Fixed, glassmorphic navigation bar with scroll progress + mobile menu. */
 export default function Navbar() {
@@ -70,6 +74,22 @@ export default function Navbar() {
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  /**
+   * Primary header action. On the home page it scrolls straight to the free
+   * render box instead of reloading the route; from every other page the link
+   * navigates to `/#upload`, so the visitor always lands on the same box.
+   */
+  const handleStartIdea = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    setMobileOpen(false);
+    if (pathname !== "/") return;
+
+    const zone = document.getElementById(RENDER_ZONE_ID);
+    if (!zone) return;
+
+    event.preventDefault();
+    zone.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <header
@@ -138,7 +158,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => {
-                  void signOut({ callbackUrl: "/" });
+                  void signOut({ callbackUrl: startIdeaHref });
                 }}
                 aria-label="خروج از حساب"
                 className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-2.5 text-xs font-semibold text-zinc-300 transition-all duration-300 hover:border-rose-400/50 hover:text-white"
@@ -157,14 +177,22 @@ export default function Navbar() {
               ورود / ثبت‌نام
             </button>
           )}
-          <Link href={startIdeaHref} className="btn-primary px-5 py-2.5 text-xs">
+          <Link
+            href={startIdeaHref}
+            onClick={handleStartIdea}
+            className="btn-primary px-5 py-2.5 text-xs"
+          >
             <span aria-hidden="true">🚀</span>
             شروع ایده رایگان
           </Link>
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <Link href={startIdeaHref} className="btn-primary hidden px-4 py-2 text-[11px] sm:inline-flex">
+          <Link
+            href={startIdeaHref}
+            onClick={handleStartIdea}
+            className="btn-primary hidden px-4 py-2 text-[11px] sm:inline-flex"
+          >
             <span aria-hidden="true">🚀</span>
             شروع ایده رایگان
           </Link>
@@ -241,7 +269,7 @@ export default function Navbar() {
                 type="button"
                 onClick={() => {
                   setMobileOpen(false);
-                  void signOut({ callbackUrl: "/" });
+                  void signOut({ callbackUrl: startIdeaHref });
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-zinc-300 transition-colors duration-300 hover:border-rose-400/50 hover:text-white"
               >
@@ -263,14 +291,18 @@ export default function Navbar() {
             </button>
           )}
 
-          <Link href={startIdeaHref} className="btn-primary mt-2 w-full">
+          <Link href={startIdeaHref} onClick={handleStartIdea} className="btn-primary mt-2 w-full">
             <span aria-hidden="true">🚀</span>
             شروع ایده رایگان
           </Link>
         </nav>
       </div>
 
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+      <AuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        afterAuthHref={startIdeaHref}
+      />
     </header>
   );
 }

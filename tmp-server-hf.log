@@ -1,0 +1,10 @@
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3100
+
+ ✓ Starting...
+ ✓ Ready in 426ms
+[notifications] e-mail: ENABLED (127.0.0.1:2525, secure=false, from "LUMENS <no-reply@lumens.archi>")
+[notifications] SMS: ENABLED (provider=kavenegar, sender=10004346)
+[sms] delivery failed for 0960***066: fetch failed
+[mail] failed for p***@lumens.test via 127.0.0.1:2525: connect ECONNREFUSED 127.0.0.1:2525
+[notifications] signup p***@lumens.test / 0960***066: email=FAILED(connect ECONNREFUSED 127.0.0.1:2525) sms=FAILED(fetch failed)  <= e-mail: connect ECONNREFUSED 127.0.0.1:2525

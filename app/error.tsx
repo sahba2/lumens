@@ -44,7 +44,7 @@ export default function Error({
         {error?.message ? (
           <p
             dir="ltr"
-            className="mx-auto mt-5 max-w-lg overflow-x-auto rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-left text-[11px] leading-6 text-zinc-500"
+            className="mx-auto mt-5 max-w-lg overflow-x-auto rounded-xl border border-lumens-border bg-[#171A1E]/70 px-4 py-3 text-left text-[11px] leading-6 text-lumens-dim"
           >
             {error.message}
           </p>

@@ -4,33 +4,42 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { createPortal } from "react-dom";
 
 import {
-  ENGINE_PHASE_COUNT,
-  ENGINE_RUNTIME_MS,
-  IDEA_PRESETS,
-  PHASE_STEPS,
-  buildIdeaFilename,
-  formatIdeaBrief,
-  isAbortError,
-  processArchitecturalIdea,
-  type ArchitecturalIdeaResult,
-} from "@/lib/aiEngine";
+  BRIEF_PRESETS,
+  SHEET_PHASE_COUNT,
+  SHEET_PHASE_STEPS,
+  buildSheetFilename,
+  formatSheetBrief,
+  type ArchitectureSheet,
+  type RenderKind,
+  type RenderPrompt,
+} from "@/lib/architectureEngine";
+import {
+  ASPECT_RATIO_OPTIONS,
+  RENDER_ERROR_MESSAGES,
+  RENDER_PROGRESS_STEPS,
+  aspectRatioLabel,
+  type EngineSheetFailure,
+  type EngineSheetSuccess,
+  type RenderAspectRatio,
+} from "@/lib/engine-contract";
 import { toPersianDigits } from "@/lib/data";
+import { fetchRenderQuota, postRenderRequest } from "@/lib/render-client";
 
-import EngineResults from "./engine/EngineResults";
+import ArchitecturalBoard, { type BoardRender } from "./engine/ArchitecturalBoard";
+import ArchitectureSheetView from "./engine/ArchitectureSheetView";
 import {
   IconBolt,
-  IconBook,
   IconBrain,
   IconCheck,
   IconClose,
   IconCopy,
-  IconCube,
   IconDownload,
-  IconLayers,
   IconSparkles,
 } from "./Icons";
 
-type EngineStatus = "idle" | "running" | "done" | "error";
+type EngineStatus = "idle" | "planning" | "ready" | "rendering" | "done" | "error";
+
+type RenderStage = 0 | 1 | 2 | 3;
 
 interface EngineModalProps {
   open: boolean;
@@ -39,34 +48,81 @@ interface EngineModalProps {
   onClose: () => void;
 }
 
-const statusLabel: Record<EngineStatus, string> = {
+interface QuotaState {
+  authenticated: boolean;
+  remaining: number;
+  limit: number;
+  providerReady: boolean;
+}
+
+/** Live proof of the wire: the last real call the dialog performed. */
+interface RequestTrace {
+  path: string;
+  status: number | null;
+  ms: number;
+  at: string;
+}
+
+const MAX_BRIEF_LENGTH = 600;
+
+const STATUS_LABEL: Record<EngineStatus, string> = {
   idle: "STANDBY",
-  running: "PROCESSING",
+  planning: "ANALYZING",
+  ready: "SHEET READY",
+  rendering: "RENDERING",
   done: "COMPLETE",
   error: "INTERRUPTED",
 };
 
-/** Keeps the brief short enough for the mock engine to analyse precisely. */
-const MAX_BRIEF_LENGTH = 280;
+const NETWORK_ERROR = "ارتباط با سرور برقرار نشد؛ اتصال خود را بررسی و دوباره تلاش کنید.";
 
-const phaseIcons = {
-  concept: IconBrain,
-  plan: IconLayers,
-  materials: IconCube,
-  courses: IconBook,
-} as const;
+/** Waits until the browser can paint the render (real decode, no fake delay). */
+async function decodeImage(url: string): Promise<void> {
+  if (typeof window === "undefined") return;
+
+  const image = new window.Image();
+  image.src = url;
+
+  if (typeof image.decode === "function") {
+    try {
+      await image.decode();
+      return;
+    } catch {
+      /* fall through to the onload promise */
+    }
+  }
+
+  await new Promise<void>((resolve) => {
+    image.onload = () => resolve();
+    image.onerror = () => resolve();
+    if (image.complete) resolve();
+  });
+}
 
 /**
- * Full-screen idea-processing dialog: brief form, four-phase tracker,
- * progressive progress bar and the structured proposal with copy/download
- * export. Cancels in-flight runs on close through an AbortController.
+ * LUMENS AI Architecture Engine dialog.
+ *
+ * Real pipeline, no mock timers:
+ *   POST /api/engine/sheet     -> 5-phase sheet (free and unlimited)
+ *   POST /api/render/generate  -> FLUX render (3 free credits per account)
+ *
+ * The four progressive statuses map to those real lifecycle events; credits
+ * are read from `/api/render/quota` and refreshed after every render.
  */
 export default function EngineModal({ open, initialPrompt = "", onClose }: EngineModalProps) {
   const [mounted, setMounted] = useState(false);
   const [prompt, setPrompt] = useState(initialPrompt);
   const [status, setStatus] = useState<EngineStatus>("idle");
-  const [phaseIndex, setPhaseIndex] = useState(-1);
-  const [result, setResult] = useState<ArchitecturalIdeaResult | null>(null);
+  const [stage, setStage] = useState<RenderStage>(0);
+  const [sheet, setSheet] = useState<ArchitectureSheet | null>(null);
+  const [render, setRender] = useState<BoardRender | null>(null);
+  const [selectedPromptId, setSelectedPromptId] = useState<RenderKind>("exterior-hero");
+  const [renderingPromptId, setRenderingPromptId] = useState<RenderKind | null>(null);
+  const [renderErrorPromptId, setRenderErrorPromptId] = useState<RenderKind | null>(null);
+  const [checkingCredits, setCheckingCredits] = useState(false);
+  const [lastRequest, setLastRequest] = useState<RequestTrace | null>(null);
+  const [aspectRatio, setAspectRatio] = useState<RenderAspectRatio>("16:9");
+  const [quota, setQuota] = useState<QuotaState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -86,49 +142,245 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
     onCloseRef.current = onClose;
   }, [onClose]);
 
-  const start = useCallback(async (raw: string) => {
-    const brief = raw.trim();
+  /**
+   * Reads the free-render credits of the signed-in account. Server-side the
+   * same numbers come from `.data/render-credits.json` (see `lib/render-quota`),
+   * so this is the source of truth the dialog checks *before* POSTing.
+   */
+  const readQuota = useCallback(async (): Promise<QuotaState | null> => {
+    const snapshot = await fetchRenderQuota();
+    if (!snapshot) return null;
 
-    if (brief.length < 3) {
-      setFormError("ایده خود را با حداقل سه حرف بنویسید تا موتور بتواند آن را تحلیل کند.");
-      setStatus("idle");
-      setPhaseIndex(-1);
-      setResult(null);
-      textareaRef.current?.focus();
-      return;
-    }
+    const next: QuotaState = {
+      authenticated: snapshot.authenticated,
+      remaining: snapshot.remainingCredits,
+      limit: snapshot.limit,
+      providerReady: snapshot.providerReady,
+    };
 
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    const runId = runIdRef.current + 1;
-    runIdRef.current = runId;
-
-    setPrompt(brief);
-    setFormError(null);
-    setError(null);
-    setResult(null);
-    setCopied(false);
-    setStatus("running");
-    setPhaseIndex(0);
-
-    try {
-      const next = await processArchitecturalIdea(brief, {
-        signal: controller.signal,
-        onPhase: (index) => {
-          if (runIdRef.current === runId) setPhaseIndex(index);
-        },
-      });
-      if (runIdRef.current !== runId) return;
-      setResult(next);
-      setPhaseIndex(ENGINE_PHASE_COUNT - 1);
-      setStatus("done");
-    } catch (caught) {
-      if (runIdRef.current !== runId || isAbortError(caught)) return;
-      setError(caught instanceof Error ? caught.message : "پردازش ایده با خطا مواجه شد؛ دوباره تلاش کنید.");
-      setStatus("error");
-    }
+    setQuota(next);
+    return next;
   }, []);
+
+  const refreshQuota = useCallback(async () => {
+    await readQuota();
+  }, [readQuota]);
+
+  const requestSheet = useCallback(
+    async (raw: string) => {
+      const brief = raw.trim().replace(/\s+/g, " ");
+
+      if (brief.length < 3) {
+        setFormError("ایده خود را با حداقل سه حرف بنویسید تا موتور بتواند آن را تحلیل کند.");
+        setStatus("idle");
+        setStage(0);
+        textareaRef.current?.focus();
+        return;
+      }
+
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const runId = runIdRef.current + 1;
+      runIdRef.current = runId;
+
+      setPrompt(brief);
+      setFormError(null);
+      setError(null);
+      setSheet(null);
+      setRender(null);
+      setCopied(false);
+      setStatus("planning");
+      setStage(0);
+
+      try {
+        const response = await fetch("/api/engine/sheet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ brief }),
+          signal: controller.signal,
+        });
+        const data = (await response.json()) as EngineSheetSuccess | EngineSheetFailure;
+
+        if (runIdRef.current !== runId) return;
+
+        if (!response.ok || !data.success) {
+          setError(
+            data.success ? RENDER_ERROR_MESSAGES.upstream : data.error || "تولید شیت ناموفق بود.",
+          );
+          setStatus("error");
+          return;
+        }
+
+        const next = data.sheet;
+        const firstPrompt = next.prompts[0];
+        setSheet(next);
+        setSelectedPromptId(firstPrompt?.id ?? "exterior-hero");
+        setAspectRatio(firstPrompt?.aspectRatio ?? "16:9");
+        // Stage 1 = the calibrated prompt is on screen and selectable.
+        setStage(1);
+        setStatus("ready");
+        void refreshQuota();
+      } catch (caught) {
+        if (runIdRef.current !== runId) return;
+        if (caught instanceof DOMException && caught.name === "AbortError") return;
+        setError(NETWORK_ERROR);
+        setStatus("error");
+      }
+    },
+    [refreshQuota],
+  );
+
+  const selectedPrompt =
+    sheet?.prompts.find((item) => item.id === selectedPromptId) ?? sheet?.prompts[0] ?? null;
+
+  const requestRender = useCallback(
+    async (targetPrompt?: RenderPrompt) => {
+      // The card buttons pass their own prompt; the footer button uses the
+      // currently selected one. Either way this is a real POST below.
+      const target = targetPrompt ?? selectedPrompt;
+      if (!sheet || !target) return;
+
+      const ratio = targetPrompt ? targetPrompt.aspectRatio : aspectRatio;
+
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const runId = runIdRef.current + 1;
+      runIdRef.current = runId;
+      const startedAt = Date.now();
+
+      setError(null);
+      setRender(null);
+      setRenderingPromptId(target.id);
+      setRenderErrorPromptId(null);
+      setStatus("rendering");
+      setStage(2);
+      setCheckingCredits(true);
+
+      // 1) Free renders are checked first: GET /api/render/quota reads
+      //    .data/render-credits.json server-side. No POST happens below when
+      //    the visitor is a guest or the quota is already exhausted.
+      const quotaStartedAt = Date.now();
+      const preflight = await readQuota();
+      setCheckingCredits(false);
+      setLastRequest({
+        path: "GET /api/render/quota",
+        status: preflight ? 200 : null,
+        ms: Date.now() - quotaStartedAt,
+        at: new Date().toISOString(),
+      });
+
+      if (runIdRef.current !== runId) return;
+
+      if (!preflight) {
+        setRenderingPromptId(null);
+        setRenderErrorPromptId(target.id);
+        setError("بررسی سهمیه رندر ممکن نشد؛ اتصال خود را بررسی و دوباره تلاش کنید.");
+        setStatus("error");
+        setStage(1);
+        return;
+      }
+
+      if (!preflight.authenticated) {
+        setRenderingPromptId(null);
+        setRenderErrorPromptId(target.id);
+        setError(RENDER_ERROR_MESSAGES.unauthenticated);
+        setStatus("error");
+        setStage(1);
+        return;
+      }
+
+      if (preflight.remaining <= 0) {
+        setRenderingPromptId(null);
+        setRenderErrorPromptId(target.id);
+        setError(RENDER_ERROR_MESSAGES["quota-exhausted"]);
+        setStatus("error");
+        setStage(1);
+        return;
+      }
+
+      // 2) Quota is available -> send the real generation request.
+      try {
+        const result = await postRenderRequest({
+          prompt: target.prompt,
+          negativePrompt: target.negativePrompt,
+          aspectRatio: ratio,
+          projectId: sheet.id,
+          signal: controller.signal,
+        });
+
+        if (runIdRef.current !== runId) return;
+
+        setLastRequest({
+          path: "POST /api/render/generate",
+          status: result.status || null,
+          ms: Date.now() - startedAt,
+          at: new Date().toISOString(),
+        });
+
+        if (!result.ok) {
+          setRenderingPromptId(null);
+          setRenderErrorPromptId(target.id);
+          setQuota((current) =>
+            current
+              ? {
+                  ...current,
+                  authenticated: result.authenticated,
+                  remaining: result.remainingCredits,
+                }
+              : current,
+          );
+          setError(result.error);
+          setStatus("error");
+          setStage(1);
+          return;
+        }
+
+        // Stage 3 = the browser decodes the final image to compose the board.
+        setStage(3);
+        await decodeImage(result.imageUrl);
+        if (runIdRef.current !== runId) return;
+
+        setRender({
+          promptId: target.id,
+          imageUrl: result.imageUrl,
+          downloadUrl: result.downloadUrl,
+          promptTitleFa: target.titleFa,
+          promptTitleEn: target.titleEn,
+          aspectRatio: result.aspectRatio,
+          generatedAt: result.generatedAt,
+          elapsedMs: Date.now() - startedAt,
+          provider: result.provider,
+        });
+        setQuota((current) => ({
+          authenticated: true,
+          remaining: result.remainingCredits,
+          limit: current?.limit ?? 0,
+          providerReady: current?.providerReady ?? true,
+        }));
+        setRenderingPromptId(null);
+        setRenderErrorPromptId(null);
+        setStatus("done");
+        void refreshQuota();
+      } catch (caught) {
+        if (runIdRef.current !== runId) return;
+        if (caught instanceof DOMException && caught.name === "AbortError") return;
+        setRenderingPromptId(null);
+        setRenderErrorPromptId(target.id);
+        setLastRequest({
+          path: "POST /api/render/generate",
+          status: null,
+          ms: Date.now() - startedAt,
+          at: new Date().toISOString(),
+        });
+        setError(NETWORK_ERROR);
+        setStatus("error");
+        setStage(1);
+      }
+    },
+    [sheet, selectedPrompt, aspectRatio, readQuota, refreshQuota],
+  );
 
   const handleClose = useCallback(() => {
     abortRef.current?.abort();
@@ -137,27 +389,42 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    void start(prompt);
+    void requestSheet(prompt);
   };
 
-  const handleReset = () => {
+  const handleCancel = useCallback(() => {
+    abortRef.current?.abort();
+    runIdRef.current += 1;
+    setRenderingPromptId(null);
+    setRenderErrorPromptId(null);
+    setCheckingCredits(false);
+    setStatus(sheet ? "ready" : "idle");
+    setStage(sheet ? 1 : 0);
+  }, [sheet]);
+
+  const handleReset = useCallback(() => {
     abortRef.current?.abort();
     runIdRef.current += 1;
     setStatus("idle");
-    setPhaseIndex(-1);
-    setResult(null);
+    setStage(0);
+    setSheet(null);
+    setRender(null);
+    setRenderingPromptId(null);
+    setCheckingCredits(false);
+    setRenderErrorPromptId(null);
+    setLastRequest(null);
     setError(null);
     setFormError(null);
     setCopied(false);
-    textareaRef.current?.focus();
-  };
+    window.setTimeout(() => textareaRef.current?.focus(), 60);
+  }, []);
 
-  const handleCopy = async () => {
-    if (!result) return;
-    const text = formatIdeaBrief(result);
+  const handleCopySheet = async () => {
+    if (!sheet) return;
+    const text = formatSheetBrief(sheet);
 
     try {
-      if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
+      if (!navigator.clipboard?.writeText) throw new Error("clipboard-unavailable");
       await navigator.clipboard.writeText(text);
     } catch {
       const area = document.createElement("textarea");
@@ -178,21 +445,21 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
     setCopied(true);
   };
 
-  const handleDownload = () => {
-    if (!result) return;
-    const blob = new Blob([formatIdeaBrief(result)], { type: "text/plain;charset=utf-8" });
+  const handleDownloadSheet = () => {
+    if (!sheet) return;
+    const blob = new Blob([formatSheetBrief(sheet)], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = buildIdeaFilename(result);
+    link.download = buildSheetFilename(sheet);
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
   };
 
-  // Open / close lifecycle: seed the brief, auto-run valid prompts, abort the
-  // current run when the dialog closes and lock background scrolling.
+  // Open / close lifecycle: seed the brief, auto-plan valid prompts, abort the
+  // in-flight request on close and lock background scrolling.
   useEffect(() => {
     if (!open) {
       abortRef.current?.abort();
@@ -204,14 +471,18 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
     runIdRef.current += 1;
     abortRef.current?.abort();
     setStatus("idle");
-    setPhaseIndex(-1);
-    setResult(null);
+    setStage(0);
+    setSheet(null);
+    setRender(null);
+    setRenderingPromptId(null);
+    setRenderErrorPromptId(null);
     setError(null);
     setFormError(null);
     setCopied(false);
+    void refreshQuota();
 
     if (seed.length >= 3) {
-      void start(seed);
+      void requestSheet(seed);
     }
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
@@ -248,7 +519,7 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
   }, []);
 
   useEffect(() => {
-    if (status === "done") {
+    if (status === "done" || status === "ready") {
       bodyRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [status]);
@@ -256,9 +527,29 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
   const progress =
     status === "done"
       ? 100
-      : phaseIndex < 0
-        ? 0
-        : Math.min(96, Math.round(((phaseIndex + 0.6) / ENGINE_PHASE_COUNT) * 100));
+      : status === "rendering"
+        ? stage === 3
+          ? 94
+          : 58
+        : status === "ready"
+          ? 38
+          : status === "planning"
+            ? 14
+            : 0;
+
+  const canRender = Boolean(
+    sheet && quota?.authenticated && quota.remaining > 0 && quota.providerReady !== false,
+  );
+
+  const gateMessage = !quota
+    ? "در حال بررسی سهمیه رندر…"
+    : !quota.authenticated
+      ? "برای رندر تصویر ابتدا وارد حساب کاربری خود شوید."
+      : quota.providerReady === false
+        ? "سرویس رندر تصویر روی سرور پیکربندی نشده است."
+        : quota.remaining <= 0
+          ? "سهمیه رندر رایگان شما به پایان رسیده است؛ فازهای متنی نامحدود باقی می‌مانند."
+          : null;
 
   if (!open || !mounted) return null;
 
@@ -275,9 +566,9 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
         <div
           ref={panelRef}
           tabIndex={-1}
-          className="relative z-10 flex max-h-[94vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl2 border border-white/10 bg-[#08080b] shadow-card outline-none animate-fade-up"
+          className="relative z-10 flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-xl2 border border-white/10 bg-[#08080b] shadow-card outline-none animate-fade-up"
         >
-          <header className="relative shrink-0 border-b border-white/10 bg-gradient-to-l from-gold/[0.09] via-transparent to-transparent px-4 pb-4 pt-4 sm:px-6">
+          <header className="relative shrink-0 border-b border-white/10 bg-gradient-to-l from-gold/[0.09] via-transparent to-transparent px-4 pb-3.5 pt-4 sm:px-6">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gold-line opacity-60" />
 
             <div className="flex items-start justify-between gap-4">
@@ -287,16 +578,16 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
                   LUMENS AI ARCHITECTURE ENGINE
                   <span
                     className={`rounded-full px-2 py-0.5 text-[8px] tracking-wider ${
-                      status === "running"
+                      status === "planning" || status === "rendering"
                         ? "bg-gold/15 text-gold-light"
-                        : status === "done"
+                        : status === "done" || status === "ready"
                           ? "bg-emerald-400/10 text-emerald-200"
                           : status === "error"
                             ? "bg-rose-400/10 text-rose-200"
                             : "bg-white/[0.06] text-zinc-400"
                     }`}
                   >
-                    {statusLabel[status]}
+                    {STATUS_LABEL[status]}
                   </span>
                 </span>
 
@@ -304,268 +595,407 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
                   id="engine-dialog-title"
                   className="mt-2 truncate font-display text-base font-black text-white sm:text-xl"
                 >
-                  {result
-                    ? result.projectName
-                    : status === "running"
-                      ? "در حال پردازش ایده…"
-                      : "موتور ایده‌پرداز لومنز"}
+                  {sheet
+                    ? sheet.projectName
+                    : status === "planning"
+                      ? "در حال تحلیل بریف…"
+                      : "موتور معماری لومنز"}
                 </h2>
 
                 <p className="mt-1 truncate text-[10px] text-zinc-500">
-                  {result
-                    ? `${result.typologyLabel} · ${result.locationLabel}`
+                  {sheet
+                    ? `${sheet.typology.labelFa} · ${sheet.location.labelFa} · ${toPersianDigits(
+                        SHEET_PHASE_COUNT,
+                      )} فاز`
                     : prompt.trim()
                       ? `«${prompt.trim()}»`
-                      : `بریف خود را بنویسید؛ ${toPersianDigits(ENGINE_PHASE_COUNT)} فاز پردازش در ${toPersianDigits(
-                          ENGINE_RUNTIME_MS / 1000,
-                        )} ثانیه`}
+                      : "بریف پروژه را وارد کنید تا شیت پنج‌فازی و پرامپت‌های رندر ساخته شود."}
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleClose}
-                aria-label="بستن موتور ایده‌پرداز"
-                className="glass flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-zinc-300 transition-colors duration-300 hover:border-gold/45 hover:text-gold"
-              >
-                <IconClose className="h-4 w-4" />
-              </button>
+              <div className="flex shrink-0 items-center gap-2">
+                {quota ? (
+                  <span
+                    className={`chip text-[9px] ${
+                      quota.authenticated && quota.remaining > 0
+                        ? "border-gold/25 text-gold-light"
+                        : "border-white/10 text-zinc-500"
+                    }`}
+                  >
+                    <IconSparkles className="h-3 w-3" />
+                    {quota.authenticated
+                      ? `${toPersianDigits(quota.remaining)} رندر رایگان`
+                      : "مهمان"}
+                  </span>
+                ) : null}
+
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  aria-label="بستن پنجره"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-zinc-400 transition-colors hover:border-rose-400/40 hover:text-white"
+                >
+                  <IconClose className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-3">
-              <span className="text-[8px] font-bold tracking-widest2 text-zinc-500">{statusLabel[status]}</span>
-              <span className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                <span
-                  className="block h-full rounded-full bg-gradient-to-l from-gold-light via-gold to-gold-deep transition-[width] duration-700 ease-linear"
-                  style={{ width: `${progress}%` }}
-                />
-                {status === "running" ? (
-                  <span className="pointer-events-none absolute inset-0 bg-sheen animate-shimmer" />
-                ) : null}
-              </span>
-              <span className="w-9 text-left text-[10px] font-bold text-gold-light tabular-nums">
-                {toPersianDigits(progress)}٪
-              </span>
+            <div className="mt-3 flex h-0.5 overflow-hidden rounded-full bg-white/10">
+              <span
+                className="h-full bg-gradient-to-l from-gold-deep via-gold to-gold-light transition-[width] duration-700 ease-cinema"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           </header>
-          <div
-            ref={bodyRef}
-            className="no-scrollbar relative flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6"
-          >
-            {status === "done" && result ? (
-              <EngineResults result={result} />
-            ) : status === "running" ? (
-              <div className="space-y-5">
-                <div className="glass-card relative overflow-hidden p-4 sm:p-5">
-                  <div className="pointer-events-none absolute -left-16 -top-20 h-48 w-48 rounded-full bg-gold/10 blur-3xl" />
-                  <div className="relative flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-semibold tracking-widest2 text-gold/80">
-                        LUMENS PIPELINE · IN PROGRESS
-                      </p>
-                      <p className="mt-2 text-xs leading-6 text-zinc-300">«{prompt}»</p>
-                    </div>
-                    <span className="chip border-gold/30 text-gold-light">
-                      <IconBolt className="h-3.5 w-3.5" />
-                      فاز {toPersianDigits(Math.max(phaseIndex + 1, 1))} از{" "}
-                      {toPersianDigits(ENGINE_PHASE_COUNT)}
-                    </span>
-                  </div>
 
-                  <div className="relative mt-4 grid gap-2 sm:grid-cols-3">
-                    {["تحلیل بریف", "پالت متریال", "مسیر یادگیری"].map((label, index) => {
-                      const reached = phaseIndex >= index;
-                      return (
-                        <div
-                          key={label}
-                          className={`rounded-2xl border px-3 py-2.5 transition-colors duration-500 ${
-                            reached
-                              ? "border-gold/30 bg-gold/[0.07]"
-                              : "border-white/10 bg-white/[0.03]"
-                          }`}
-                        >
-                          <p className="text-[9px] tracking-widest2 text-zinc-500">{label}</p>
-                          <p
-                            className={`mt-1 font-mono text-[10px] font-bold ${
-                              reached ? "text-gold-light" : "text-zinc-600"
-                            }`}
-                          >
-                            {reached ? "READY" : "WAITING"}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+          <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+            {error ? (
+              <p
+                role="alert"
+                className="mb-4 rounded-2xl border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-[11px] leading-6 text-rose-200"
+              >
+                {error}
+              </p>
+            ) : null}
 
-                <PhaseTracker phaseIndex={phaseIndex} />
-              </div>
-            ) : (
+            {!sheet ? (
               <form
                 id="engine-brief-form"
                 onSubmit={handleSubmit}
-                className="grid gap-4 lg:grid-cols-[1.35fr_1fr]"
+                className="grid gap-4 lg:grid-cols-[1.15fr_1fr]"
               >
-                <div className="glass-card p-4 sm:p-5">
-                  <div className="flex items-center justify-between gap-3">
+                <div className="space-y-3">
+                  <div className="glass rounded-2xl p-4">
                     <label
                       htmlFor="engine-brief"
-                      className="inline-flex items-center gap-2 text-xs font-bold text-white"
+                      className="text-[10px] font-semibold tracking-widest2 text-gold/80"
                     >
-                      <IconSparkles className="h-4 w-4 text-gold" />
-                      بریف معماری شما
+                      بریف پروژه
                     </label>
-                    <span className="text-[10px] font-medium text-zinc-500 tabular-nums">
-                      {toPersianDigits(prompt.trim().length)} / {toPersianDigits(MAX_BRIEF_LENGTH)}
-                    </span>
-                  </div>
+                    <textarea
+                      id="engine-brief"
+                      ref={textareaRef}
+                      value={prompt}
+                      onChange={(event) => {
+                        setPrompt(event.target.value);
+                        setFormError(null);
+                      }}
+                      rows={5}
+                      maxLength={MAX_BRIEF_LENGTH}
+                      disabled={status === "planning"}
+                      placeholder="مثال: مرکز پژوهش معماری با حیاط فرورفته در اصفهان، بتن اکسپوز و شیشه ساختاری..."
+                      className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-xs leading-6 text-zinc-200 outline-none transition-colors placeholder:text-zinc-600 focus:border-gold/50 disabled:opacity-60"
+                    />
+                    <div className="mt-2 flex items-center justify-between gap-2 text-[9px] text-zinc-600">
+                      <span>خروجی متنی (فاز ۱، ۲، ۴، ۵) رایگان و نامحدود است.</span>
+                      <span className="font-mono">
+                        {toPersianDigits(prompt.trim().length)}/{toPersianDigits(MAX_BRIEF_LENGTH)}
+                      </span>
+                    </div>
 
-                  <textarea
-                    id="engine-brief"
-                    ref={textareaRef}
-                    value={prompt}
-                    onChange={(event) => {
-                      setPrompt(event.target.value);
-                      if (formError) setFormError(null);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-                        event.preventDefault();
-                        void start(prompt);
-                      }
-                    }}
-                    rows={4}
-                    maxLength={MAX_BRIEF_LENGTH}
-                    spellCheck={false}
-                    placeholder="مثلاً: ویلای کنسولی در کردان با بتن اکسپوز، حیاط مرکزی و نور طلایی غروب…"
-                    aria-invalid={Boolean(formError)}
-                    aria-describedby={formError ? "engine-brief-error" : undefined}
-                    className="field mt-3 min-h-[132px] resize-none leading-7"
-                  />
-
-                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-[10px] leading-5 text-zinc-500">
-                      اشاره به کاربری، سایت، متریال و نور؛ خروجی دقیق‌تر می‌شود.
-                    </span>
-                    {prompt.length > 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPrompt("");
-                          setFormError(null);
-                          textareaRef.current?.focus();
-                        }}
-                        className="text-[10px] font-semibold text-zinc-400 transition-colors duration-300 hover:text-gold"
+                    {formError ? (
+                      <p
+                        role="alert"
+                        className="mt-2 rounded-xl border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-[10px] leading-5 text-rose-200"
                       >
-                        پاک کردن
-                      </button>
+                        {formError}
+                      </p>
                     ) : null}
+
+                    <button
+                      type="submit"
+                      disabled={prompt.trim().length < 3 || status === "planning"}
+                      className="btn-primary mt-3 w-full justify-center px-4 py-2.5 text-xs disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+                    >
+                      <IconBolt className="h-3.5 w-3.5" />
+                      {status === "planning" ? "در حال تحلیل…" : "تولید شیت پنج‌فازی"}
+                    </button>
                   </div>
 
-                  {formError ? (
-                    <p
-                      id="engine-brief-error"
-                      role="alert"
-                      className="mt-3 rounded-2xl border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-[11px] leading-6 text-rose-200"
-                    >
-                      {formError}
-                    </p>
-                  ) : null}
-
-                  {error ? (
-                    <p
-                      role="alert"
-                      className="mt-3 rounded-2xl border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-[11px] leading-6 text-rose-200"
-                    >
-                      {error}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="space-y-4">
                   <div className="glass rounded-2xl p-4">
                     <p className="text-[10px] font-semibold tracking-widest2 text-gold/80">
                       بریف‌های آماده
                     </p>
                     <div className="mt-3 flex flex-wrap gap-1.5">
-                      {IDEA_PRESETS.map((preset) => (
+                      {BRIEF_PRESETS.map((preset) => (
                         <button
                           key={preset}
                           type="button"
+                          disabled={status === "planning"}
                           onClick={() => {
                             setPrompt(preset);
                             setFormError(null);
-                            textareaRef.current?.focus();
+                            void requestSheet(preset);
                           }}
-                          className={`chip text-right transition-colors duration-300 ${
-                            prompt === preset
-                              ? "border-gold/50 bg-gold/15 text-gold-light"
-                              : "hover:border-gold/35 hover:text-white"
-                          }`}
+                          className="chip text-right transition-colors duration-300 hover:border-gold/35 hover:text-white disabled:opacity-50"
                         >
                           {preset}
                         </button>
                       ))}
                     </div>
                   </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="glass rounded-2xl p-4">
+                    <p className="text-[10px] font-semibold tracking-widest2 text-gold/80">
+                      خروجی شیت
+                    </p>
+                    <ul className="mt-3 space-y-2">
+                      {SHEET_PHASE_STEPS.map((step) => (
+                        <li key={step.id} className="flex items-start gap-2.5">
+                          <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-gold/10 text-[8px] font-bold text-gold-light">
+                            {toPersianDigits(step.index + 1)}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold text-zinc-200">{step.title}</p>
+                            <p className="mt-0.5 text-[10px] leading-5 text-zinc-500">
+                              {step.description}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
                   <div className="glass rounded-2xl p-4">
                     <p className="text-[10px] font-semibold tracking-widest2 text-gold/80">
-                      خروجی این اجرا
+                      سهمیه رندر تصویر
                     </p>
-                    <ul className="mt-3 space-y-2">
-                      {PHASE_STEPS.map((step) => {
-                        const Icon = phaseIcons[step.id];
-                        return (
-                          <li key={step.id} className="flex items-start gap-2.5">
-                            <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
-                            <div className="min-w-0">
-                              <p className="text-[11px] font-semibold text-zinc-200">{step.title}</p>
-                              <p className="mt-0.5 text-[10px] leading-5 text-zinc-500">
-                                {step.description}
-                              </p>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    <p className="mt-3 border-t border-white/10 pt-3 text-[10px] leading-5 text-zinc-500">
-                      کل پردازش حدود {toPersianDigits(ENGINE_RUNTIME_MS / 1000)} ثانیه؛ خروجی‌ها
-                      قابل کپی و دانلود هستند.
+                    <p className="mt-2 text-[10px] leading-6 text-zinc-400">
+                      هر حساب کاربری {toPersianDigits(quota?.limit ?? 3)} رندر رایگان دارد؛ کلید
+                      سرویس رندر تنها روی سرور نگهداری می‌شود و به مرورگر نمی‌رسد.
                     </p>
+                    {quota && !quota.authenticated ? (
+                      <a
+                        href="/auth/login"
+                        className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-semibold text-gold-light hover:text-gold"
+                      >
+                        ورود به حساب برای رندر
+                        <IconSparkles className="h-3 w-3" />
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               </form>
-            )}
+            ) : null}
+
+            {status === "planning" ? <ProgressRail stage={0} /> : null}
+
+            {sheet ? (
+              <div className="space-y-4">
+                {/* ------------------------------------------- render controls */}
+                <div className="rounded-2xl border border-gold/25 bg-gold/[0.05] p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-semibold tracking-widest2 text-gold/80">
+                        PHASE 3 · RENDER
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-white">
+                        {selectedPrompt
+                          ? `${selectedPrompt.titleFa} · ${selectedPrompt.titleEn}`
+                          : "پرامپت رندر"}
+                      </p>
+                      <p className="mt-1 text-[10px] leading-5 text-zinc-400">
+                        نسبت تصویر {aspectRatioLabel(aspectRatio)}
+                        {selectedPrompt ? ` · ${selectedPrompt.cameraFa}` : ""}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5">
+                      {ASPECT_RATIO_OPTIONS.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => setAspectRatio(option.id)}
+                          disabled={status === "rendering"}
+                          title={option.hint}
+                          className={`chip transition-colors duration-300 disabled:opacity-50 ${
+                            aspectRatio === option.id
+                              ? "border-gold/50 bg-gold/15 text-gold-light"
+                              : "hover:border-gold/35 hover:text-white"
+                          }`}
+                        >
+                          {option.ratio}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3">
+                    <p className="max-w-md text-[10px] leading-5 text-zinc-500">
+                      {gateMessage ??
+                        (quota
+                          ? `${toPersianDigits(quota.remaining)} رندر از ${toPersianDigits(
+                              quota.limit,
+                            )} سهمیه رایگان باقی مانده است.`
+                          : "سهمیه رندر در حال بررسی است…")}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleReset}
+                        disabled={status === "rendering"}
+                        className="btn-ghost px-3 py-2 text-[11px] disabled:opacity-50"
+                      >
+                        <IconSparkles className="h-3.5 w-3.5 text-gold" />
+                        بریف جدید
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void requestRender()}
+                        disabled={status === "rendering"}
+                        title={gateMessage ?? "ارسال پرامپت به موتور رندر FLUX"}
+                        data-gated={canRender ? undefined : "true"}
+                        className="btn-primary px-4 py-2 text-[11px] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none data-[gated=true]:opacity-90"
+                      >
+                        <IconBolt className="h-3.5 w-3.5" />
+                        {checkingCredits
+                          ? "بررسی سهمیه…"
+                          : status === "rendering"
+                            ? "در حال رندر…"
+                            : "رندر تصویر با FLUX"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {lastRequest ? (
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-white/5 pt-2">
+                      <p
+                        dir="ltr"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 px-2.5 py-1 font-mono text-[9px] text-zinc-400"
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${
+                            lastRequest.status !== null && lastRequest.status < 400
+                              ? "bg-emerald-400"
+                              : "bg-rose-400"
+                          }`}
+                        />
+                        {lastRequest.path} · {lastRequest.status ?? "network-error"} ·{" "}
+                        {(lastRequest.ms / 1000).toFixed(1)}s
+                      </p>
+                      <p className="text-[9px] text-zinc-600">
+                        آخرین درخواست واقعی این گفت‌وگو با بک‌اند
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+
+                {status === "ready" ? (
+                  <div className="flex items-start gap-2 rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3">
+                    <IconCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
+                    <p className="text-[11px] leading-5 text-zinc-300">
+                      {RENDER_PROGRESS_STEPS[1]}
+                      <span className="ms-2 text-[10px] text-zinc-500">
+                        پرامپت آماده است؛ یکی از سه پرامپت را انتخاب و رندر کنید.
+                      </span>
+                    </p>
+                  </div>
+                ) : null}
+
+                {status === "rendering" ? <ProgressRail stage={stage === 3 ? 3 : 2} /> : null}
+
+                {status === "rendering" ? (
+                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a]">
+                    <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-gradient-to-br from-white/[0.07] via-white/[0.03] to-transparent">
+                      <span className="pointer-events-none absolute inset-0 animate-shimmer bg-gradient-to-l from-transparent via-gold/10 to-transparent" />
+                      <div className="relative px-4 text-center">
+                        <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 bg-gold/10">
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-gold/30 border-t-gold" />
+                        </span>
+                        <p className="mt-3 text-[11px] font-bold text-white">
+                          {checkingCredits
+                            ? "بررسی سهمیه رندر رایگان…"
+                            : "در حال رندر تصویر با FLUX…"}
+                        </p>
+                        <p className="mt-1 text-[10px] leading-5 text-zinc-500">
+                          {checkingCredits
+                            ? "خواندن render-credits.json روی سرور و تأیید اعتبار حساب"
+                            : "پرامپت به /api/render/generate ارسال شد و منتظر پاسخ سرویس هستیم"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {status === "done" && render ? (
+                  <ArchitecturalBoard
+                    sheet={sheet}
+                    render={render}
+                    remainingCredits={quota?.remaining ?? 0}
+                    canRegenerate
+                    onRegenerate={() => void requestRender()}
+                    onNewBrief={handleReset}
+                  />
+                ) : null}
+
+                <div className="flex items-center justify-between gap-2 px-1">
+                  <p className="text-[9px] font-semibold tracking-widest2 text-gold/70">
+                    SHEET · {toPersianDigits(SHEET_PHASE_COUNT)} PHASES
+                  </p>
+                  <p className="text-[9px] text-zinc-600">
+                    {sheet.presentation.titleFa} · {sheet.metadata.scale}
+                  </p>
+                </div>
+
+                <ArchitectureSheetView
+                  sheet={sheet}
+                  selectedPromptId={selectedPromptId}
+                  onSelectPrompt={setSelectedPromptId}
+                  disabled={status === "rendering"}
+                  renderPreview={render}
+                  renderingPromptId={renderingPromptId}
+                  checkingCredits={checkingCredits}
+                  renderErrorPromptId={renderErrorPromptId}
+                  renderError={error}
+                  onRenderPrompt={(next) => {
+                    // The clicked card's own prompt is what gets POSTed.
+                    setSelectedPromptId(next.id);
+                    setAspectRatio(next.aspectRatio);
+                    void requestRender(next);
+                  }}
+                />
+              </div>
+            ) : null}
           </div>
+
           <footer className="relative shrink-0 border-t border-white/10 bg-white/[0.025] px-4 py-3 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="hidden max-w-md text-[10px] leading-5 text-zinc-500 sm:block">
                 {status === "done"
-                  ? "بریف آماده است؛ می‌توانید آن را کپی یا به‌صورت فایل متنی دانلود کنید."
-                  : status === "running"
-                    ? "پردازش در مرورگر شبیه‌سازی می‌شود و با بستن پنجره یا لغو، متوقف خواهد شد."
-                    : status === "error"
-                      ? "پردازش ناتمام ماند؛ بریف را دوباره ارسال کنید."
-                      : `هر اجرا ${toPersianDigits(ENGINE_PHASE_COUNT)} فاز را در ${toPersianDigits(
-                          ENGINE_RUNTIME_MS / 1000,
-                        )} ثانیه طی می‌کند.`}
+                  ? "شیت و رندر نهایی آماده‌اند؛ می‌توانید رندر را دانلود یا بریف جدیدی بسازید."
+                  : status === "rendering"
+                    ? "رندر روی سرور در حال انجام است؛ لغو پیش از پاسخ، سهمیه را مصرف نمی‌کند."
+                    : status === "ready"
+                      ? "فازهای متنی رایگان‌اند؛ رندر تصویر از سهمیه حساب شما کم می‌کند."
+                      : status === "error"
+                        ? "پردازش ناتمام ماند؛ بریف را دوباره ارسال کنید."
+                        : "خروجی هر اجرا قابل کپی و دانلود به‌صورت فایل متنی است."}
               </p>
 
               <div className="flex flex-wrap items-center gap-2">
-                {status === "done" && result ? (
+                {status === "planning" || status === "rendering" ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="btn-ghost px-4 py-2 text-xs"
-                    >
+                    <span className="chip border-gold/25 text-gold-light">
+                      <IconBolt className="h-3.5 w-3.5" />
+                      {toPersianDigits(progress)}٪
+                    </span>
+                    <button type="button" onClick={handleCancel} className="btn-ghost px-4 py-2 text-xs">
+                      <IconClose className="h-3.5 w-3.5" />
+                      {status === "rendering" ? "لغو رندر" : "لغو پردازش"}
+                    </button>
+                  </>
+                ) : sheet ? (
+                  <>
+                    <button type="button" onClick={handleReset} className="btn-ghost px-4 py-2 text-xs">
                       <IconSparkles className="h-3.5 w-3.5 text-gold" />
                       ایده جدید
                     </button>
                     <button
                       type="button"
-                      onClick={() => void handleCopy()}
+                      onClick={() => void handleCopySheet()}
                       className="btn-ghost px-4 py-2 text-xs"
                     >
                       {copied ? (
@@ -573,39 +1003,20 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
                       ) : (
                         <IconCopy className="h-3.5 w-3.5" />
                       )}
-                      {copied ? "کپی شد" : "کپی بریف"}
+                      {copied ? "کپی شد" : "کپی شیت"}
                     </button>
                     <button
                       type="button"
-                      onClick={handleDownload}
+                      onClick={handleDownloadSheet}
                       className="btn-primary px-4 py-2 text-xs"
                     >
                       <IconDownload className="h-3.5 w-3.5" />
-                      دانلود بریف
-                    </button>
-                  </>
-                ) : status === "running" ? (
-                  <>
-                    <span className="chip border-gold/25 text-gold-light">
-                      <IconBolt className="h-3.5 w-3.5" />
-                      {toPersianDigits(progress)}٪
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="btn-ghost px-4 py-2 text-xs"
-                    >
-                      <IconClose className="h-3.5 w-3.5" />
-                      لغو پردازش
+                      دانلود شیت
                     </button>
                   </>
                 ) : (
                   <>
-                    <button
-                      type="button"
-                      onClick={handleClose}
-                      className="btn-ghost px-4 py-2 text-xs"
-                    >
+                    <button type="button" onClick={handleClose} className="btn-ghost px-4 py-2 text-xs">
                       بستن
                     </button>
                     <button
@@ -615,7 +1026,7 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
                       className="btn-primary px-5 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
                     >
                       <IconBolt className="h-3.5 w-3.5" />
-                      {status === "error" ? "تلاش دوباره" : "شروع پردازش ایده"}
+                      {status === "error" ? "تلاش دوباره" : "شروع پردازش"}
                     </button>
                   </>
                 )}
@@ -630,71 +1041,55 @@ export default function EngineModal({ open, initialPrompt = "", onClose }: Engin
 }
 
 /**
- * Four-step pipeline tracker. Each step reports its own state so the modal can
- * show progress without duplicating the phase copy from `lib/aiEngine`.
+ * Four-step progressive status required by the engine. The highlighted step is
+ * bound to real request state (`stage`), never to a timer.
  */
-function PhaseTracker({ phaseIndex }: { phaseIndex: number }) {
+function ProgressRail({ stage }: { stage: RenderStage }) {
   return (
-    <div className="glass rounded-2xl p-4 sm:p-5">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-[10px] font-semibold tracking-widest2 text-gold/80">PHASE TRACKER</p>
-        <span className="text-[10px] text-zinc-500">
-          فاز {toPersianDigits(Math.max(phaseIndex + 1, 1))} از {toPersianDigits(ENGINE_PHASE_COUNT)}
+        <p className="text-[9px] font-semibold tracking-widest2 text-gold/70">ENGINE PIPELINE</p>
+        <span className="text-[9px] text-zinc-600">
+          مرحله {toPersianDigits(stage + 1)} از {toPersianDigits(RENDER_PROGRESS_STEPS.length)}
         </span>
       </div>
 
-      <ol className="mt-4 grid gap-2.5 sm:grid-cols-2">
-        {PHASE_STEPS.map((step) => {
-          const done = step.index < phaseIndex;
-          const active = step.index === phaseIndex;
-          const Icon = phaseIcons[step.id];
-          const stateLabel = done ? "DONE" : active ? "RUNNING" : "QUEUED";
+      <ol className="mt-3 grid gap-2">
+        {RENDER_PROGRESS_STEPS.map((step, index) => {
+          const done = index < stage;
+          const active = index === stage;
 
           return (
             <li
-              key={step.id}
+              key={step}
               aria-current={active ? "step" : undefined}
-              className={`relative overflow-hidden rounded-2xl border p-3 transition-colors duration-500 ${
+              className={`relative overflow-hidden rounded-xl border px-3 py-2 transition-colors duration-500 ${
                 active
-                  ? "border-gold/45 bg-gold/[0.08] shadow-glow-sm"
+                  ? "border-gold/45 bg-gold/[0.08]"
                   : done
                     ? "border-emerald-300/20 bg-emerald-400/[0.04]"
                     : "border-white/10 bg-white/[0.02]"
               }`}
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-center gap-2.5">
                 <span
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[9px] font-bold ${
                     active
                       ? "border-gold/50 bg-gold/15 text-gold-light"
                       : done
-                        ? "border-emerald-300/25 bg-emerald-400/10 text-emerald-200"
-                        : "border-white/10 bg-white/[0.04] text-zinc-500"
+                        ? "border-emerald-300/30 bg-emerald-400/10 text-emerald-200"
+                        : "border-white/15 text-zinc-600"
                   }`}
                 >
-                  {done ? <IconCheck className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                  {done ? <IconCheck className="h-3 w-3" /> : toPersianDigits(index + 1)}
                 </span>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[9px] font-semibold tracking-widest2 text-gold/70">
-                      {step.label}
-                    </span>
-                    <span
-                      className={`font-mono text-[8px] font-bold tracking-wider ${
-                        active
-                          ? "text-gold-light"
-                          : done
-                            ? "text-emerald-200/80"
-                            : "text-zinc-600"
-                      }`}
-                    >
-                      {stateLabel}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs font-bold text-white">{step.title}</p>
-                  <p className="mt-1 text-[10px] leading-5 text-zinc-500">{step.description}</p>
-                </div>
+                <p
+                  className={`text-[11px] leading-5 ${
+                    active ? "font-semibold text-white" : done ? "text-emerald-100/80" : "text-zinc-500"
+                  }`}
+                >
+                  {step}
+                </p>
               </div>
 
               {active ? (
@@ -709,3 +1104,5 @@ function PhaseTracker({ phaseIndex }: { phaseIndex: number }) {
     </div>
   );
 }
+
+

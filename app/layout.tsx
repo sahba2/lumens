@@ -71,7 +71,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "dark",
-  themeColor: "#0a0a0a",
+  themeColor: "#212429",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -85,7 +85,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body className="dark relative min-h-screen overflow-x-hidden bg-neutral-950 text-neutral-100 antialiased">
+      <body className="dark relative min-h-screen overflow-x-hidden bg-lumens-bg text-lumens-muted antialiased">
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:right-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-gold focus:px-5 focus:py-2 focus:text-sm focus:font-bold focus:text-ink"
